@@ -119,6 +119,7 @@ The request body should be in JSON format and include the following fields:
 Success Response
 Status Code: 200 OK
 
+```
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
@@ -131,14 +132,17 @@ Status Code: 200 OK
     "socketId": ""
   }
 }
+```
 
 Error Responses
 Invalid Credentials Status Code: 400 Bad Request
+```
 {
   "message": "Invalid email or password"
 }
 ```
 Validation Error Status Code: 400 Bad Request
+```
 {
   "errors": [
     {
@@ -153,6 +157,7 @@ Validation Error Status Code: 400 Bad Request
     }
   ]
 }
+```
 
 Users Logout
 Endpoint: /users/logout
@@ -168,9 +173,11 @@ Authorization	Bearer <JWT>	Yes	The user's JWT token.
 Success Response
 Status Code: 200 OK
 
+```
 {
   "message": "Logged out successfully"
 }
+```
 
 User Profile
 Endpoint: /users/profile
@@ -186,6 +193,7 @@ Authorization	Bearer <JWT>	Yes	The user's JWT token.
 Success Response
 Status Code: 200 OK
 
+```
 {
   "_id": "64f1b2c3d4e5f6a7b8c9d0e1",
   "fullname": {
@@ -195,9 +203,12 @@ Status Code: 200 OK
   "email": "john.doe@example.com",
   "socketId": ""
 }
+```
 
 Error Response
 Unauthorized Status Code: 401 Unauthorized
+```
 {
   "message": "Unauthorized"
 }
+```
