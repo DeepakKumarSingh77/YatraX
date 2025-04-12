@@ -10,25 +10,14 @@
 
 ## Users Register
 
-### Endpoint: `/users/register`
+### Endpoint
+`POST /users/register`
 
-#### Description
-This endpoint is used to register a new user. It validates the input data, checks if the user already exists, hashes the password, and creates a new user in the database. Upon successful registration, it returns the created user and a JSON Web Token (JWT).
+### Description
+Registers a new user. Validates input, checks if the user already exists, hashes the password, and stores the user in the database. Returns the created user and a JWT token.
 
-#### Method
-`POST`
+### Request Body
 
-#### Request Body
-The request body should be in JSON format and include the following fields:
-
-| Field               | Type   | Required | Description                                   |
-|---------------------|--------|----------|-----------------------------------------------|
-| `fullname.firstname`| String | Yes      | The first name of the user (minimum 3 characters). |
-| `fullname.lastname` | String | No       | The last name of the user (minimum 3 characters). |
-| `email`             | String | Yes      | A valid email address.                        |
-| `password`          | String | Yes      | A password with a minimum length of 6 characters. |
-
-#### Example Request Body
 ```json
 {
   "fullname": {
@@ -40,11 +29,16 @@ The request body should be in JSON format and include the following fields:
 }
 ```
 
-### Response
-The response will be in JSON format and include the created user and a JWT token.
+| Field               | Type   | Required | Description                                      |
+|--------------------|--------|----------|--------------------------------------------------|
+| `fullname.firstname` | String | Yes      | First name (min 3 characters)                    |
+| `fullname.lastname`  | String | No       | Last name (min 3 characters)                     |
+| `email`              | String | Yes      | Valid email address                              |
+| `password`           | String | Yes      | Password (min 6 characters)                      |
 
-#### Success Response
-Status Code: 201 Created
+### Success Response
+
+**Status:** `201 Created`
 
 ```json
 {
@@ -61,8 +55,9 @@ Status Code: 201 Created
 }
 ```
 
-#### Validation Error
-Status Code: 400 Bad Request
+### Error Responses
+
+**Validation Error – 400 Bad Request**
 
 ```json
 {
@@ -81,8 +76,7 @@ Status Code: 400 Bad Request
 }
 ```
 
-#### User Already Exists
-Status Code: 400 Bad Request
+**User Already Exists – 400 Bad Request**
 
 ```json
 {
@@ -90,25 +84,18 @@ Status Code: 400 Bad Request
 }
 ```
 
+---
+
 ## Users Login
 
-### Endpoint: `/users/login`
+### Endpoint
+`POST /users/login`
 
-#### Description
-This endpoint allows a user to log in by providing valid credentials. Upon successful login, it returns a JWT token and user details.
+### Description
+Authenticates a user using email and password. Returns JWT token and user details on success.
 
-#### Method
-`POST`
+### Request Body
 
-#### Request Body
-The request body should be in JSON format and include the following fields:
-
-| Field    | Type   | Required | Description                |
-|----------|--------|----------|----------------------------|
-| `email`  | String | Yes      | A valid email address.     |
-| `password` | String | Yes      | The user's password.       |
-
-#### Example Request Body
 ```json
 {
   "email": "john.doe@example.com",
@@ -116,10 +103,16 @@ The request body should be in JSON format and include the following fields:
 }
 ```
 
-Success Response
-Status Code: 200 OK
+| Field      | Type   | Required | Description          |
+|------------|--------|----------|----------------------|
+| `email`    | String | Yes      | Valid email address  |
+| `password` | String | Yes      | User's password      |
 
-```
+### Success Response
+
+**Status:** `200 OK`
+
+```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
@@ -134,15 +127,19 @@ Status Code: 200 OK
 }
 ```
 
-Error Responses
-Invalid Credentials Status Code: 400 Bad Request
-```
+### Error Responses
+
+**Invalid Credentials – 400 Bad Request**
+
+```json
 {
   "message": "Invalid email or password"
 }
 ```
-Validation Error Status Code: 400 Bad Request
-```
+
+**Validation Error – 400 Bad Request**
+
+```json
 {
   "errors": [
     {
@@ -159,41 +156,53 @@ Validation Error Status Code: 400 Bad Request
 }
 ```
 
-Users Logout
-Endpoint: /users/logout
-Description
-This endpoint logs out the user by clearing the authentication token and blacklisting it.
+---
 
-Method
-POST
+## Users Logout
 
-Headers
-Header	Value	Required	Description
-Authorization	Bearer <JWT>	Yes	The user's JWT token.
-Success Response
-Status Code: 200 OK
+### Endpoint
+`POST /users/logout`
 
-```
+### Description
+Logs out the user by invalidating or blacklisting the JWT token.
+
+### Headers
+
+| Header         | Value               | Required | Description           |
+|----------------|---------------------|----------|-----------------------|
+| Authorization  | Bearer `<JWT>`      | Yes      | User's JWT token      |
+
+### Success Response
+
+**Status:** `200 OK`
+
+```json
 {
   "message": "Logged out successfully"
 }
 ```
 
-User Profile
-Endpoint: /users/profile
-Description
-This endpoint retrieves the profile of the currently authenticated user.
+---
 
-Method
-GET
+## User Profile
 
-Headers
-Header	Value	Required	Description
-Authorization	Bearer <JWT>	Yes	The user's JWT token.
-Success Response
-Status Code: 200 OK
+### Endpoint
+`GET /users/profile`
 
-```
+### Description
+Fetches the currently logged-in user's profile information.
+
+### Headers
+
+| Header         | Value               | Required | Description           |
+|----------------|---------------------|----------|-----------------------|
+| Authorization  | Bearer `<JWT>`      | Yes      | User's JWT token      |
+
+### Success Response
+
+**Status:** `200 OK`
+
+```json
 {
   "_id": "64f1b2c3d4e5f6a7b8c9d0e1",
   "fullname": {
@@ -205,9 +214,11 @@ Status Code: 200 OK
 }
 ```
 
-Error Response
-Unauthorized Status Code: 401 Unauthorized
-```
+### Error Response
+
+**Unauthorized – 401 Unauthorized**
+
+```json
 {
   "message": "Unauthorized"
 }
