@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MenuIcon, XIcon } from '@heroicons/react/solid';
 
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -10,7 +11,7 @@ export const Navbar = () => {
   return (
     <nav className="bg-white shadow-lg fixed w-full z-20 top-0 left-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="text-3xl font-extrabold text-orange-500 tracking-wide hover:text-orange-600 transition-all">

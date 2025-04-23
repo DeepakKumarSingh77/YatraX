@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from "axios";
 
 export const Charges = () => {
@@ -109,7 +109,7 @@ export const Charges = () => {
           }`}
           onClick={handleBookNow}
         >
-          {selected ? `Book ${selected}` : "Select a service to book"}
+          <Link to="/book-ride">{selected ? `Book ${selected}` : "Select a service to book"}</Link>
         </button>
       </div>
     </div>

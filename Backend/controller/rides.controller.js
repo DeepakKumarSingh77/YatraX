@@ -1,4 +1,5 @@
 const ridesService=require('../services/rides.service');
+
 module.exports.getfare = async (req, res) => {
     console.log(req.body);
     // const pickup = req.query.pickup;

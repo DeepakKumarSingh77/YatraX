@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { Footer } from "../Components/Footer";
+import Services from "../Components/Services";
 
 export const Home = () => {
   const [data, setdata] = useState({
@@ -129,6 +130,7 @@ export const Home = () => {
           )}
         </div>
       </div>
+      <Services/>
       <Footer />
     </div>
   );
