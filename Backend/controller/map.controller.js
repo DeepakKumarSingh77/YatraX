@@ -2,7 +2,7 @@ const axios = require('axios');
 module.exports.autosuggest=async (req,res)=>{
     const input=req.query.pickup;
     const apiKey = process.env.GOOGLE_MAPS_API_KEY; // Make
-    console.log(input);
+    // console.log(input);
     // console.log(apiKey);
     const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
     try {
