@@ -44,7 +44,7 @@ module.exports.getAddressCoordinate = async (address) => {
             throw new Error('Unable to fetch coordinates');
         }
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         throw error;
     }
 }

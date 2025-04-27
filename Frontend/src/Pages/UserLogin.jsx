@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState,useContext} from 'react';
 import { UserDataContext } from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { SocketContext } from '../context/SocketContext';
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const UserLogin = () => {
     password: '',
   });
   const navigate = useNavigate();
+  const socket = useContext(SocketContext);
 
   const { user, setUser } = useContext(UserDataContext);
 
@@ -30,7 +32,9 @@ const UserLogin = () => {
     });
     if(data.status === 200) {
       localStorage.setItem('token', JSON.stringify(data.data.token));
+      localStorage.setItem('user', JSON.stringify(data.data.user._id));
       setUser(data.data);
+      socket.emit('updateSocketId',{usertype:'user',id:data.data.user._id});
       navigate('/book-ride');
     }else{
       window.alert("Invalid Credentials")

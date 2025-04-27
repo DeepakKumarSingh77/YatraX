@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
+import { UserDataContext } from "../Context/UserContext";
 
 export const Charges = () => {
   const { pickup, destination } = useParams();
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
-  const [data, setdata] = useState();
+  const [data, setData] = useState();
+  const [rideId, setRideId] = useState("");
+  const { user, setUser } = useContext(UserDataContext);
+  const userId = JSON.parse(localStorage.getItem('user')) || null;
 
   useEffect(() => {
     if (!pickup || !destination) {
@@ -15,18 +19,18 @@ export const Charges = () => {
   }, [pickup, destination, navigate]);
 
   useEffect(() => {
-    const getfare = async () => {
+    const getFare = async () => {
       try {
         const fare = await axios.get(`http://localhost:3000/rides/getfare`, {
           params: { pickup, destination }
         });
-        setdata(fare.data);
+        setData(fare.data);
       } catch (error) {
         console.error("Error fetching fare", error);
       }
     };
-    getfare();
-  }, []);
+    getFare();
+  }, [pickup, destination]);
 
   const services = [
     {
@@ -47,12 +51,31 @@ export const Charges = () => {
     },
   ];
 
-  const handleBookNow = () => {
+  const handleBookNow = async () => {
     if (selected) {
-      alert(`Booking ${selected} from ${pickup} to ${destination}`);
-      // Here you would typically make an API call to book the ride
+      try {
+        const response = await axios.post("http://localhost:3000/rides/bookride", {
+          userId,
+          pickup,
+          destination,
+          vehicleType: selected,
+        });
+        console.log("Ride booked successfully:", response.data);
+        setRideId(response.data.ride._id); // ✅ set rideId in state
+      } catch (error) {
+        console.error("Error booking ride", error);
+      }
+    } else {
+      alert("Please select a service to book.");
     }
   };
+
+  // 🔁 Navigate to book-ride page once rideId is available
+  useEffect(() => {
+    if (rideId) {
+      navigate(`/book-ride/${rideId}`);
+    }
+  }, [rideId, navigate]);
 
   return (
     <div className="relative w-screen min-h-screen p-6 flex flex-col items-center">
@@ -109,7 +132,7 @@ export const Charges = () => {
           }`}
           onClick={handleBookNow}
         >
-          <Link to="/book-ride">{selected ? `Book ${selected}` : "Select a service to book"}</Link>
+          {selected ? `Book ${selected}` : "Select a service to book"}
         </button>
       </div>
     </div>

@@ -29,7 +29,7 @@ function App() {
                 <Route path="/user-signup" element={<UserSignup/>} />
                 <Route path="/user-login" element={<UserLogin/>} />
                 <Route path="/captain-login" element={<CaptainLogin/>} />
-                <Route path="/book-ride"
+                <Route path="/book-ride/:id"
             element={
               <UserWrapper>
                 <UserConfirmRide />

@@ -80,3 +80,12 @@ module.exports.logoutCaptain = async (req, res, next) => {
 
     res.status(200).json({ message: 'Logout successfully' });
 }
+
+module.exports.getCaptainById = async (req, res, next) => {
+    const { id } = req.params;
+    const captain = await captainModel.findById(id);
+    if (!captain) {
+        return res.status(404).json({ message: 'Captain not found' });
+    }
+    res.status(200).json({ captain });
+}

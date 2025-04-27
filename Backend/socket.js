@@ -1,5 +1,7 @@
 const socket = require('socket.io');
 const captainModel  = require('./models/captain.model');
+const rideModel = require('./models/ride.model');
+const userModel = require('./models/user.model');
 
 let io;
 
@@ -17,7 +19,7 @@ function intializeSocket(server) {
 
         // Event for location update
         socket.on('locationUpdate', async (data) => {
-            console.log("Location update received", data);
+            // console.log("Location update received", data);
             try {
                 const updatedCaptain = await captainModel.findOneAndUpdate(
                     { _id: data.captainId },
@@ -41,6 +43,27 @@ function intializeSocket(server) {
             }
         });
 
+        socket.on('updateSocketId', async (data) => {
+            console.log("updateId received", data);
+            try {
+                if(data.usertype==='user'){
+                    const updatedUser = await  userModel.findById(data.id);
+                    // console.log(updatedUser);
+                    // console.log(socket.id);
+                    updatedUser.socketId = socket.id;
+                    // console.log(updatedUser);
+                    await updatedUser.save();
+                }else{
+                     const updateCaptain = await captainModel.findById(data.id);
+                     updateCaptain.socketId= socket.id;
+                     await updateCaptain.save();
+                }
+            } catch (error) {
+                console.error("Error updating captain location:", error);
+            }
+        });
+                
+
         socket.on('findDrivers', async (data) => {
             // console.log("Find drivers event received", data);
             try {
@@ -60,11 +83,36 @@ function intializeSocket(server) {
         });
 
         socket.on('confirm-ride', ({ driverSocketId, userInfo }) => {
+            console.log("Ride request received", driverSocketId, userInfo);
             io.to(driverSocketId).emit('ride-request', {
               from: userInfo,
               message: 'You have a new ride request!',
             });
           });
+        
+        socket.on('acceptRide', async ({ rideId, captainId }) => {
+            // console.log("Ride accepted", rideId, captainId);
+            const ride = await rideModel.findById(rideId);
+            // console.log("Ride found", ride);
+            const userId= ride.user;
+            // console.log("User found", userId);
+            const usersocketId= await userModel.findById(userId).select('socketId');
+            // console.log("User socket found", usersocketId);
+            io.to(usersocketId.socketId).emit('rideAccepted', { capId:captainId,rideid:ride._id});
+            // socket.to()
+        });
+
+        socket.on('startJourney', async ({ rideId, captainId }) => {
+            // console.log("Ride accepted", rideId, captainId);
+            const ride = await rideModel.findById(rideId);
+            // console.log("Ride found", ride);
+            const userId= ride.user;
+            // console.log("User found", userId);
+            const usersocketId= await userModel.findById(userId).select('socketId');
+            // console.log("User socket found", usersocketId);
+            io.to(usersocketId.socketId).emit('rideStarted', {data:true});
+            // socket.to()
+        });
 
         // Event when the client disconnects
         socket.on('disconnect', () => {

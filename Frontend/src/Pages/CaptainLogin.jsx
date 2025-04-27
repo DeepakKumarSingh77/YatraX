@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useContext,useEffect } from 'react';
 import  axios  from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { SocketContext } from '../context/SocketContext';
 
 const CaptainLogin = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const CaptainLogin = () => {
     password: '',
   });
   const navigate=useNavigate();
+  const socket=useContext(SocketContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,6 +18,13 @@ const CaptainLogin = () => {
       [name]: value
     }));
   };
+ const captainid=localStorage.getItem('captain');
+
+  useEffect(() => {
+        if (socket) {
+          socket.emit('updateSocketId', {usertype: 'captain',id: captainid});
+        }
+  }, [socket]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +37,8 @@ const CaptainLogin = () => {
       });
       if(response.status===200){
         localStorage.setItem('token', JSON.stringify(response.data.token));
+        localStorage.setItem('captain', JSON.stringify(response.data.captain._id));
+        socket.emit('updateSocketId',{usertype:'captain',id:response.data.captain._id});
         navigate('/captain-home');
       }else{
         window.alert("Invalid Credentials")

@@ -15,6 +15,7 @@ const CaptainHome = () => {
   const { captain } = useContext(CaptainDataContext)
   const [location, setLocation] = useState({ lat: 0, lng: 0 })
   const [newRequest, setNewRequest] = useState(false)
+  const [rideRequest, setRideRequest] = useState(null)
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -26,17 +27,17 @@ const CaptainHome = () => {
         navigator.geolocation.getCurrentPosition((position) => {
           const { latitude, longitude } = position.coords
           setLocation({ lat: latitude, lng: longitude })
-          socket.emit('locationUpdate', { lat: latitude, lng: longitude, captainId: captain.captain._id }) // Send location to server
+          socket.emit('locationUpdate', { lat: latitude, lng: longitude, captainId: captain.captain._id })
         })
       }
     }
 
     updateLocation()
 
-    // Listen for new ride requests
     socket.on("ride-request", (data) => {
-      setNewRequest(true); // Show visual indicator
-      playNotificationSound(); // Play notification sound
+      setNewRequest(true)
+      setRideRequest(data.from) // dynamically set request
+      playNotificationSound()
       console.log("📦 New ride request received:", data)
     })
 
@@ -45,24 +46,32 @@ const CaptainHome = () => {
     }
   }, [socket])
 
+  const captainid= localStorage.getItem('captain');
+
+  useEffect(() => {
+      if (socket) {
+        socket.emit('updateSocketId', {usertype: 'captain',id: captainid});
+      }
+      // console.log(socket);
+    }, [socket]);
+
   const playNotificationSound = () => {
-    const audio = new Audio('/path-to-sound/notification.mp3') // Use your own sound file
+    const audio = new Audio('/path-to-sound/notification.mp3')
     audio.play()
   }
 
   return (
     <div className='flex flex-col items-center justify-center h-screen w-full mt-22'>
-      <div className='h-[300px] w-full'>{isLoaded ? (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={location}
-          zoom={15}
-        >
-          <Marker position={location} />
-        </GoogleMap>
-      ) : <p>Loading Map...</p>}</div>
-      
-      {/* Notification Indicator */}
+      <div className='h-[300px] w-full'>
+        {isLoaded ? (
+          <GoogleMap mapContainerStyle={containerStyle} center={location} zoom={15}>
+            <Marker position={location} />
+          </GoogleMap>
+        ) : (
+          <p>Loading Map...</p>
+        )}
+      </div>
+
       {newRequest && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 p-4 bg-yellow-500 text-white rounded-xl shadow-md animate-pulse">
           <span>New Ride Request! 🚗</span>
@@ -71,7 +80,9 @@ const CaptainHome = () => {
 
       <div className='flex w-full h-full'>
         <div className='w-1/2'><RecentDriveHistory /></div>
-        <div className='w-1/2'><NewRequestforDrive /></div>
+        <div className='w-1/2'>
+          <NewRequestforDrive rideRequest={rideRequest} />
+        </div>
       </div>
     </div>
   )
